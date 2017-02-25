@@ -99,13 +99,15 @@ class ViewController: UIViewController {
     UIView.animate(withDuration: 0.5, animations: {
       self.heading.center.x += self.view.bounds.width
     })
-    UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
-      self.username.center.x += self.view.bounds.width
-    }, completion: nil)
-    UIView.animate(withDuration: 0.5, delay: 0.4, options: [], animations: {
-      self.password.center.x -= self.view.bounds.width
-    }, completion: nil)
 
+    UIView.animate(withDuration: 0.5, delay: 0.3, usingSpringWithDamping: 0.2, initialSpringVelocity: 0.0, options: [], animations: {
+        self.username.center.x += self.view.bounds.width
+    }, completion: nil)
+    
+    UIView.animate(withDuration: 0.5, delay: 0.4, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [], animations: {
+        self.password.center.x -= self.view.bounds.width
+    }, completion: nil)
+    
     UIView.animate(withDuration: 0.5, delay: 0.5, options: [], animations: {
       self.cloud1.alpha = 1.0
       }, completion: nil)
