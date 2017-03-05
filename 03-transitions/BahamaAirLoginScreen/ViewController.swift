@@ -152,6 +152,10 @@ class ViewController: UIViewController {
                        completion: nil
         )
         
+        animateCloud(cloud: cloud1)
+        animateCloud(cloud: cloud2)
+        animateCloud(cloud: cloud3)
+        animateCloud(cloud: cloud4)
     }
     
     // MARK:- further methods
@@ -191,7 +195,7 @@ class ViewController: UIViewController {
     func showMessage(index: Int){
         label.text = messages[index];
         
-        UIView.transition(with: status, duration: 1.00, options: [.curveEaseOut, .transitionCurlDown], animations: {
+        UIView.transition(with: status, duration: 1.00, options: [.curveEaseOut, .transitionFlipFromBottom], animations: {
             self.status.isHidden = false
         }, completion: { _ in
             delay(seconds: 2.0) {
@@ -199,7 +203,7 @@ class ViewController: UIViewController {
                     self.removeMessage(index: index)
                 }
                 else{
-                    
+                    self.resetForm()
                 }
             }
         })
@@ -212,6 +216,32 @@ class ViewController: UIViewController {
             self.status.isHidden = true
             self.status.center = self.statusPosition
             self.showMessage(index: index + 1)
+        })
+    }
+    
+    func resetForm() {
+        UIView.transition(with: status, duration: 0.2, options: [.curveEaseIn, .transitionFlipFromTop], animations: {
+            self.status.center = self.statusPosition
+            self.status.isHidden = true
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.33, delay: 0.0, options: [], animations: {
+                self.spinner.center = CGPoint(x: -20.0, y: 16.0)
+                self.spinner.alpha = 0.0
+                self.loginButton.tintColor = UIColor(colorLiteralRed: 0.63, green: 0.84, blue: 0.35, alpha: 1.0)
+                self.loginButton.bounds.size.width -= 80.0
+                self.loginButton.center.y -= 60.0
+            }, completion: nil)
+        })
+    }
+    
+    func animateCloud(cloud: UIImageView) {
+        let cloudSpeed = 60.0 / view.frame.size.width
+        let duration = (view.frame.size.width - cloud.frame.origin.x)*cloudSpeed
+        UIView.animate(withDuration: TimeInterval(duration), delay: 0.0, options: [.curveLinear], animations: {
+            cloud.frame.origin.x = self.view.frame.size.width
+        }, completion: {_ in
+            cloud.frame.origin.x = -cloud.frame.size.width
+            self.animateCloud(cloud: cloud)
         })
     }
 }
