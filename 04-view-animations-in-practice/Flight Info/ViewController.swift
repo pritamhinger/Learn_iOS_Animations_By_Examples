@@ -79,6 +79,7 @@ class ViewController: UIViewController {
             
             cubeTransition(label: flightNr, text: data.flightNr, direction: direction)
             cubeTransition(label: gateNr, text: data.gateNr, direction: direction)
+            cubeTransition(label: flightStatus, text: data.flightStatus, direction: direction)
             
             let offsetDeparting = CGPoint(x: CGFloat(direction.rawValue * 80), y: 0.0)
             moveLabel(label: departingFrom, text: data.departingFrom, offset: offsetDeparting)
