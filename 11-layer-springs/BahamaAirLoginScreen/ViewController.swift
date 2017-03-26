@@ -303,10 +303,12 @@ extension ViewController: CAAnimationDelegate {
                 let layer = anim.value(forKey: "layer") as? CALayer
                 anim.setValue(nil, forKey: "layer")
                 
-                let pulse = CABasicAnimation(keyPath: "transform.scale")
+                let pulse = CASpringAnimation(keyPath: "transform.scale")
+                pulse.damping = 7.5
                 pulse.fromValue = 1.25
                 pulse.toValue = 1.0
-                pulse.duration = 0.25
+                pulse.duration = pulse.settlingDuration
+                
                 layer?.add(pulse, forKey: nil)
             }
             
@@ -346,7 +348,37 @@ func roundCorners(layer: CALayer, toRadius: CGFloat) {
 
 extension ViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print(info.layer.animationKeys())
         info.layer.removeAnimation(forKey: "infoappear")
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let text = textField.text else{
+            return
+        }
+        
+        if text.characters.count < 5{
+            let jumpTextField = CASpringAnimation(keyPath: "position.y")
+            jumpTextField.fromValue = textField.layer.position.y + 1.0
+            jumpTextField.toValue = textField.layer.position.y
+            jumpTextField.initialVelocity = 100.0
+            jumpTextField.mass = 10.0
+            jumpTextField.stiffness = 1500.0
+            jumpTextField.damping = 50.0
+            jumpTextField.duration = jumpTextField.settlingDuration
+            
+            textField.layer.add(jumpTextField, forKey: nil)
+            
+            textField.layer.borderColor = UIColor.clear.cgColor
+            textField.layer.borderWidth = 3.0
+            
+            let flashTextField = CASpringAnimation(keyPath: "borderColor")
+            flashTextField.damping = 7.0
+            flashTextField.stiffness = 200.0
+            flashTextField.fromValue = UIColor(red: 1.0, green: 0.27, blue: 0.0, alpha: 1.0).cgColor
+            flashTextField.toValue = UIColor.white.cgColor
+            flashTextField.duration = flashTextField.settlingDuration
+            
+            textField.layer.add(flashTextField, forKey: nil)
+        }
     }
 }
