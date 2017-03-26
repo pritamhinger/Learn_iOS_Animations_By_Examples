@@ -89,9 +89,6 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        loginButton.center.y += 30.0
-        loginButton.alpha = 0.0
-        
         let flyRight = CABasicAnimation(keyPath: "position.x")
         flyRight.toValue = view.bounds.size.width/2
         flyRight.fromValue = -view.bounds.size.width/2
@@ -133,11 +130,26 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        UIView.animate(withDuration: 0.5, delay: 0.5,
-                       usingSpringWithDamping: 0.5, initialSpringVelocity: 0.0, options: [], animations: {
-                        self.loginButton.center.y -= 30.0
-                        self.loginButton.alpha = 1.0
-        }, completion: nil)
+        let groupAnimation = CAAnimationGroup()
+        groupAnimation.beginTime = CACurrentMediaTime() + 0.5
+        groupAnimation.duration = 0.5
+        groupAnimation.fillMode = kCAFillModeBackwards
+        
+        let scaleDown = CABasicAnimation(keyPath: "transform.scale")
+        scaleDown.fromValue = 3.5
+        scaleDown.toValue = 1.0
+        
+        let rotate = CABasicAnimation(keyPath: "transform.rotation")
+        rotate.fromValue = .pi / 4.0
+        rotate.toValue = 0.0
+        
+        let fade = CABasicAnimation(keyPath: "opacity")
+        fade.fromValue = 0.0
+        fade.toValue = 1.0
+        
+        groupAnimation.animations = [scaleDown, rotate, fade]
+        groupAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
+        loginButton.layer.add(groupAnimation, forKey: nil)
         
         animateCloud(layer: cloud1.layer)
         animateCloud(layer: cloud2.layer)
@@ -148,6 +160,9 @@ class ViewController: UIViewController {
         flyLeft.fromValue = info.layer.position.x + view.frame.size.width
         flyLeft.toValue = info.layer.position.x
         flyLeft.duration = 5.0
+        flyLeft.repeatCount = 2.5
+        flyLeft.speed = 2.0
+        flyLeft.autoreverses = true
         info.layer.add(flyLeft, forKey: "infoappear")
         
         let fadeLabelIn = CABasicAnimation(keyPath: "opacity")
