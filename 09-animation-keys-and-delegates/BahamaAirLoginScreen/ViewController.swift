@@ -49,6 +49,8 @@ class ViewController: UIViewController {
   let messages = ["Connecting ...", "Authorizing ...", "Sending credentials ...", "Failed"]
 
   var statusPosition = CGPoint.zero
+    
+    let infoLabel = UILabel()
 
   // MARK: view controller methods
 
@@ -75,6 +77,13 @@ class ViewController: UIViewController {
     status.addSubview(label)
 
     statusPosition = status.center
+    infoLabel.frame = CGRect(x: 0.0, y: loginButton.center.y + 60.0, width: view.frame.size.width, height: 30.0)
+    infoLabel.textAlignment = .center
+    infoLabel.text = "Enter username and password"
+    infoLabel.font = UIFont(name: "HelveticaNeue", size: 12.0)
+    infoLabel.textColor = UIColor.white
+    infoLabel.backgroundColor = UIColor.clear
+    view.insertSubview(infoLabel, belowSubview: loginButton)
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -87,14 +96,20 @@ class ViewController: UIViewController {
     flyRight.toValue = view.bounds.size.width/2
     flyRight.fromValue = -view.bounds.size.width/2
     flyRight.duration = 0.5
+    flyRight.delegate = self
+    flyRight.setValue("form", forKey: "name")
+    flyRight.setValue(heading.layer, forKey: "layer")
+    
     heading.layer.add(flyRight, forKey: nil)
 
     flyRight.beginTime = CACurrentMediaTime() + 0.3
     flyRight.fillMode = kCAFillModeBoth
+    flyRight.setValue(username.layer, forKey: "layer")
     username.layer.add(flyRight, forKey: nil)
     username.layer.position.x = view.bounds.size.width/2
 
     flyRight.beginTime = CACurrentMediaTime() + 0.4
+    flyRight.setValue(password.layer, forKey: "layer")
     password.layer.add(flyRight, forKey: nil)
     password.layer.position.x = view.bounds.size.width/2
 
@@ -132,6 +147,21 @@ class ViewController: UIViewController {
     animateCloud(cloud2)
     animateCloud(cloud3)
     animateCloud(cloud4)
+    let flyLeft = CABasicAnimation(keyPath: "position.x")
+    flyLeft.fromValue = infoLabel.layer.position.x + view.frame.size.width
+    flyLeft.toValue = infoLabel.layer.position.x
+    flyLeft.duration = 5.0
+    
+    let labelFadeIn = CABasicAnimation(keyPath: "opacity")
+    labelFadeIn.fromValue = 0.2
+    labelFadeIn.toValue = 1.0
+    labelFadeIn.duration = 4.5
+    
+    infoLabel.layer.add(labelFadeIn, forKey: "fadein")
+    infoLabel.layer.add(flyLeft, forKey: "infoAppear")
+    
+    username.delegate = self
+    password.delegate = self
   }
 
   func showMessage(index: Int) {
@@ -245,20 +275,59 @@ class ViewController: UIViewController {
   }
 }
 
+extension ViewController: CAAnimationDelegate{
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        print("Animation stopped")
+        
+        guard let name = anim.value(forKey: "name") as? String else {
+            return;
+        }
+        
+        if name == "form" {
+            print("Found Form")
+            let layer = anim.value(forKey: "layer") as? CALayer
+            anim.setValue(nil, forKey: "layer")
+            
+            let pulse = CABasicAnimation(keyPath: "transform.scale")
+            pulse.fromValue = 1.25
+            pulse.toValue = 1.0
+            pulse.duration = 0.99
+            layer?.add(pulse, forKey: nil)
+        }
+    }
+}
+
+extension ViewController:UITextFieldDelegate{
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        guard let keys = infoLabel.layer.animationKeys() as [String]? else {
+            print("No animation keys present on InfoLabel")
+            return
+        }
+        
+        for key in keys {
+            print("Key is \(key)")
+            if key == "infoAppear" {
+                infoLabel.layer.removeAnimation(forKey: key)
+            }
+        }
+    }
+}
+
 func tintBackgroundColor(layer: CALayer, toColor: UIColor) {
-  let tint = CABasicAnimation(keyPath: "backgroundColor")
-  tint.fromValue = layer.backgroundColor
-  tint.toValue = toColor.cgColor
-  tint.duration = 0.5
-  layer.add(tint, forKey: nil)
-  layer.backgroundColor = toColor.cgColor
+    let tint = CABasicAnimation(keyPath: "backgroundColor")
+    tint.fromValue = layer.backgroundColor
+    tint.toValue = toColor.cgColor
+    tint.duration = 0.5
+    layer.add(tint, forKey: nil)
+    layer.backgroundColor = toColor.cgColor
 }
 
 func roundCorners(layer: CALayer, toRadius: CGFloat) {
-  let round = CABasicAnimation(keyPath: "cornerRadius")
-  round.fromValue = layer.cornerRadius
-  round.toValue = toRadius
-  round.duration = 0.5
-  layer.add(round, forKey: nil)
-  layer.cornerRadius = toRadius
+    let round = CABasicAnimation(keyPath: "cornerRadius")
+    round.fromValue = layer.cornerRadius
+    round.toValue = toRadius
+    round.duration = 0.5
+    layer.add(round, forKey: nil)
+    layer.cornerRadius = toRadius
 }
