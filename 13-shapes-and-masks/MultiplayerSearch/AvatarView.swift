@@ -61,6 +61,10 @@ class AvatarView: UIView {
     
     override func didMoveToWindow() {
         layer.addSublayer(photoLayer)
+        photoLayer.mask = maskLayer
+        
+        layer.addSublayer(circleLayer)
+        addSubview(label)
     }
     
     override func layoutSubviews() {
@@ -89,6 +93,31 @@ class AvatarView: UIView {
         
         //Size the label
         label.frame = CGRect(x: 0.0, y: bounds.size.height + 10.0, width: bounds.size.width, height: 24.0)
+    }
+    
+    func bounceOff(point: CGPoint, morphSize: CGSize) {
+        let originalCenter = center
+        UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.0, options: [], animations: {
+            self.center = point
+        }, completion: { _ in
+            UIView.animate(withDuration: self.animationDuration, delay: self.animationDuration, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [], animations: {
+                self.center = originalCenter
+            }, completion: { _ in
+                self.bounceOff(point: point, morphSize: morphSize)
+            })
+        })
+        
+        let morphedFrame = (originalCenter.x > point.x) ?
+        CGRect(x: 0.0, y: bounds.height - morphSize.height, width: morphSize.width, height: morphSize.height) :
+        CGRect(x: bounds.width - morphSize.width, y: bounds.height - morphSize.height, width: morphSize.width, height: morphSize.height)
+        
+        let morphAnimation = CABasicAnimation(keyPath: "path")
+        morphAnimation.duration = animationDuration
+        morphAnimation.toValue = UIBezierPath(ovalIn: morphedFrame).cgPath
+        morphAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        
+        circleLayer.add(morphAnimation, forKey: nil)
+        maskLayer.add(morphAnimation, forKey: nil)
     }
     
 }
