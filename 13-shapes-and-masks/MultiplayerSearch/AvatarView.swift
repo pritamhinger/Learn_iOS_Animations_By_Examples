@@ -58,6 +58,7 @@ class AvatarView: UIView {
     }
     
     var shouldTransitionToFinishedState = false
+    var isSquare = false
     
     override func didMoveToWindow() {
         layer.addSublayer(photoLayer)
@@ -100,11 +101,17 @@ class AvatarView: UIView {
         UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.0, options: [], animations: {
             self.center = point
         }, completion: { _ in
-            UIView.animate(withDuration: self.animationDuration, delay: self.animationDuration, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [], animations: {
-                self.center = originalCenter
-            }, completion: { _ in
+            if self.shouldTransitionToFinishedState{
+                self.animateToSquare()
+            }
+        })
+        
+        UIView.animate(withDuration: self.animationDuration, delay: self.animationDuration, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [], animations: {
+            self.center = originalCenter
+        }, completion: { _ in
+            if !self.isSquare{
                 self.bounceOff(point: point, morphSize: morphSize)
-            })
+            }
         })
         
         let morphedFrame = (originalCenter.x > point.x) ?
@@ -119,5 +126,19 @@ class AvatarView: UIView {
         circleLayer.add(morphAnimation, forKey: nil)
         maskLayer.add(morphAnimation, forKey: nil)
     }
-    
+
+    func animateToSquare() {
+        isSquare = true
+        let squarePath = UIBezierPath(rect: bounds).cgPath
+        let squareLayerAnimation = CABasicAnimation(keyPath: "path")
+        squareLayerAnimation.duration = 0.25
+        squareLayerAnimation.fromValue = circleLayer.path
+        squareLayerAnimation.toValue = squarePath
+        
+        circleLayer.add(squareLayerAnimation, forKey: nil)
+        circleLayer.path = squarePath
+        
+        maskLayer.add(squareLayerAnimation, forKey: nil)
+        maskLayer.path = squarePath
+    }
 }

@@ -39,6 +39,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         searchForOpponents()
+        delay(seconds: 4.0, completion: foundOpponent)
     }
     
     @IBAction func actionSearchAgain() {
@@ -53,6 +54,29 @@ class ViewController: UIViewController {
         let leftBouncePoint = CGPoint(x: view.frame.size.width/2.0 - bounceXOffset, y: myAvatar.center.y)
         myAvatar.bounceOff(point: rightBouncePoint, morphSize: morphSize)
         opponentAvatar.bounceOff(point: leftBouncePoint, morphSize: morphSize)
+    }
+    
+    func foundOpponent() {
+        status.text = "Connecting..."
+        opponentAvatar.image = UIImage(named: "avatar-2")
+        opponentAvatar.name = "Tina"
+        
+        delay(seconds: 4.0, completion: connectToOpponent)
+    }
+    
+    func connectToOpponent() {
+        myAvatar.shouldTransitionToFinishedState = true
+        opponentAvatar.shouldTransitionToFinishedState = true
+        
+        delay(seconds: 1.0, completion: completed)
+    }
+    
+    func completed() {
+        status.text = "Game is ON.."
+        UIView.animate(withDuration: 0.2, animations: {
+            self.vs.alpha = 1.0
+            self.searchAgain.alpha = 1.0
+        })
     }
 }
 
