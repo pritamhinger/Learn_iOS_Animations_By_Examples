@@ -35,6 +35,7 @@ class ViewController: UIViewController {
     
     let dotLength: CGFloat = 6.0
     let dotOffset: CGFloat = 8.0
+    var lastTransformScale: CGFloat = 0.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,23 +52,30 @@ class ViewController: UIViewController {
         
         replicatorLayer.instanceCount = Int(view.frame.size.width / dotOffset)
         replicatorLayer.instanceTransform = CATransform3DMakeTranslation(-dotOffset, 0.0, 0.0)
-        
-//        let move = CABasicAnimation(keyPath: "position.y")
-//        move.fromValue = dot.position.y
-//        move.toValue = dot.position.y - 50.0
-//        move.duration = 1.0
-//        move.repeatCount = 10
-//        dot.add(move, forKey: nil)
-        
         replicatorLayer.instanceDelay = 0.02
         
     }
     
     @IBAction func actionStartMonitoring(_ sender: AnyObject) {
-        
+        dot.backgroundColor = UIColor.green.cgColor
+        monitor.startMonitoringWithHandler({ level in
+            self.meterLabel.text = String(format: "% .2f db", level)
+            let scaleFactor = max(0.2, CGFloat(level) + 50) / 2
+            
+            let scale = CABasicAnimation(keyPath: "transform.scale.y")
+            scale.fromValue = self.lastTransformScale
+            scale.toValue = scaleFactor
+            scale.duration = 0.1
+            scale.isRemovedOnCompletion = false
+            scale.fillMode = kCAFillModeForwards
+            self.dot.add(scale, forKey: nil)
+            self.lastTransformScale = scaleFactor
+        })
     }
     
     @IBAction func actionEndMonitoring(_ sender: AnyObject) {
+        monitor.stopMonitoring()
+        dot.removeAllAnimations()
         
         //speak after 1 second
         delay(seconds: 1.0) {
