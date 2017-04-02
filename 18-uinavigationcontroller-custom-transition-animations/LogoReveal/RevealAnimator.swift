@@ -50,6 +50,17 @@ class RevealAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimati
             viewOpacity.duration = duration
             toVC.view.layer.add(viewOpacity, forKey: nil)
         }
+        else{
+            let fromVC = transitionContext.view(forKey: .from)!
+            let toVC = transitionContext.view(forKey: .to)!
+            transitionContext.containerView.insertSubview(toVC, belowSubview: fromVC)
+            
+            UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseIn, animations: {
+                fromVC.transform = CGAffineTransform(scaleX: 0.01, y: 0.01)
+            }, completion: { _ in
+                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+            })
+        }
     }
     
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
