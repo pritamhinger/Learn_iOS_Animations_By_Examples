@@ -139,6 +139,7 @@
 				TargetAttributes = {
 					9C78FCA31B393B4800526BD8 = {
 						CreatedOnToolsVersion = 6.3.2;
+						DevelopmentTeam = QK5A5T3HGQ;
 						LastSwiftMigration = 0800;
 					};
 				};
@@ -298,6 +299,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = QK5A5T3HGQ;
 				INFOPLIST_FILE = Iris/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.underplot.$(PRODUCT_NAME:rfc1034identifier)";
@@ -310,6 +312,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = QK5A5T3HGQ;
 				INFOPLIST_FILE = Iris/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.underplot.$(PRODUCT_NAME:rfc1034identifier)";
