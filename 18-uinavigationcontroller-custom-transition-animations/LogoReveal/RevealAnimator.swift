@@ -43,6 +43,12 @@ class RevealAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimati
             maskLayer.add(transformLogo, forKey: nil)
             
             fromVC.logo.add(transformLogo, forKey: nil)
+            
+            let viewOpacity = CABasicAnimation(keyPath: "opacity")
+            viewOpacity.fromValue = 0.0
+            viewOpacity.toValue = 1.0
+            viewOpacity.duration = duration
+            toVC.view.layer.add(viewOpacity, forKey: nil)
         }
     }
     
